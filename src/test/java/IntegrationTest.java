@@ -12,6 +12,6 @@ public class IntegrationTest {
 	public void test() {
 		final HelloRestResource service = ProxyFactory.create(HelloRestResource.class, "http://localhost:8080/api");
 		
-		assertEquals("world	", service.world());
+		assertEquals("world", service.world());
 	}
 }
