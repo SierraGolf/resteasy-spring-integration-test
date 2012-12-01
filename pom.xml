@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
 	http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -64,121 +63,122 @@
 			<artifactId>resteasy-jaxb-provider</artifactId>
 			<version>2.3.2.Final</version>
 		</dependency>
-		
+
 		<!-- testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 		</dependency>
-		            
+
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- Skip the default running of this plug-in (or everything is run twice...) -->
-                    <skip>true</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>unit-tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skip>false</skip>
-                            <includes>
-                                <include>**/*Test.class</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*IntegrationTest.class</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>integration-tests</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skip>false</skip>
-                            <includes>
-                                <!-- Include integration tests within integration-test phase -->
-                                <include>**/*IntegrationTests.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Skip the default running of this plug-in (or everything is run 
+						twice...) -->
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<id>unit-tests</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+							<includes>
+								<include>**/*Test.class</include>
+							</includes>
+							<excludes>
+								<exclude>**/*IntegrationTest.class</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>integration-tests</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+							<includes>
+								<!-- Include integration tests within integration-test phase -->
+								<include>**/*IntegrationTests.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
-        <profile>
-            <id>runITs</id>
-            <build>
-                <plugins>
+		<profile>
+			<id>runITs</id>
+			<build>
+				<plugins>
 					<plugin>
-					        <groupId>org.mortbay.jetty</groupId>
-					        <artifactId>maven-jetty-plugin</artifactId>
-					        <version>6.1.10</version>
-					        <configuration>
-					                <scanIntervalSeconds>10</scanIntervalSeconds>
-					                <stopKey>foo</stopKey>
-					                <stopPort>9999</stopPort>
-					        </configuration>
-					        <executions>
-					                <execution>
-					                        <id>start-jetty</id>
-					                        <phase>pre-integration-test</phase>
-					                        <goals>
-					                                <goal>run</goal>
-					                        </goals>
-					                        <configuration>
-					                                <scanIntervalSeconds>0</scanIntervalSeconds>
-					                                <daemon>true</daemon>
-					                        </configuration>
-					                </execution>
-					                <execution>
-					                        <id>stop-jetty</id>
-					                        <phase>post-integration-test</phase>
-					                        <goals>
-					                                <goal>stop</goal>
-					                        </goals>
-					                </execution>
-					        </executions>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>maven-jetty-plugin</artifactId>
+						<version>6.1.10</version>
+						<configuration>
+							<scanIntervalSeconds>10</scanIntervalSeconds>
+							<stopKey>foo</stopKey>
+							<stopPort>9999</stopPort>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-jetty</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<scanIntervalSeconds>0</scanIntervalSeconds>
+									<daemon>true</daemon>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-jetty</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <skip>false</skip>
-                            <includes>
-                                <include>**/*IntegrationTest.class</include>
-                            </includes>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>integration-test</id>
-                                <phase>integration-test</phase>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>verify</id>
-                                <goals>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<skip>false</skip>
+							<includes>
+								<include>**/*IntegrationTest.class</include>
+							</includes>
+						</configuration>
+						<executions>
+							<execution>
+								<id>integration-test</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
