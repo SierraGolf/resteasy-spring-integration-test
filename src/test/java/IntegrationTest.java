@@ -21,7 +21,7 @@ public class IntegrationTest {
 	/**
 	 * The context path of the application, set as system property by maven failsafe plugin.
 	 */
-	public static final String CONTEXT_PATH = System.getProperty("integration.test.context.path");
+	private static final String CONTEXT_PATH = System.getProperty("integration.test.context.path");
 
 	/**
 	 * Base path of this application.
