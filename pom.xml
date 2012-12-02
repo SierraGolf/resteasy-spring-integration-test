@@ -2,34 +2,49 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
 	http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>resteasy-spring-integretaion-test</artifactId>
+	<artifactId>resteasy-spring-integration-test</artifactId>
 	<groupId>com.codereligion</groupId>
 	<version>1.0</version>
+	<packaging>war</packaging>
 	<name>RESTEasy with Spring DI and integration test</name>
 
-	<dependencies>
-		<!-- Logger -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
+	<properties>
+		<!-- general maven properties -->
+		<java.version>1.6</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+		<!-- dependency versions -->
+		<spring.version>3.1.0.RELEASE</spring.version>
+		<resteasy.version>2.3.2.Final</resteasy.version>
+
+		<!-- test properties -->
+		<integration.test.context.path>resteasy-spring-integration-test</integration.test.context.path>
+		<integration.test.servlet.port>8080</integration.test.servlet.port>
+		<integration.test.ajp.port>8009</integration.test.ajp.port>
+		
+		<!-- test dependency versions -->
+		<failsafe.version>2.12.4</failsafe.version>
+		<surefire.version>2.12.4</surefire.version>
+		<junit.version>4.10</junit.version>
+		<jacoco.version>0.5.9.201207300726</jacoco.version>
+	</properties>
+
+	<dependencies>
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.1.0.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.1.0.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.1.0.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -41,111 +56,236 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>jaxrs-api</artifactId>
-			<version>2.3.2.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>2.3.2.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jackson-provider</artifactId>
-			<version>2.3.2.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-spring</artifactId>
-			<version>2.3.2.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxb-provider</artifactId>
-			<version>2.3.2.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 
 		<!-- testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
 
 	<build>
+
 		<plugins>
+
+			<!-- 
+			skip default execution of failsafe and surefire plugin, so that they
+			are only executed through the profiles
+			-->
 			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${failsafe.version}</version>
 				<configuration>
-					<!-- Skip the default running of this plug-in (or everything is run 
-						twice...) -->
 					<skip>true</skip>
 				</configuration>
-				<executions>
-					<execution>
-						<id>unit-tests</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<include>**/*Test.class</include>
-							</includes>
-							<excludes>
-								<exclude>**/*IntegrationTest.class</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>integration-tests</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<!-- Include integration tests within integration-test phase -->
-								<include>**/*IntegrationTests.java</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire.version}</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 	</build>
 
+	<!--
+	defines 2 profiles, one is specific for unit tests the other for integration tests.
+	both are mutually exclusive, so that in a jenkins build pipeline each job executes only
+	one profile.
+	-->
 	<profiles>
+	
 		<profile>
-			<id>runITs</id>
+			<id>unit.test</id>
+			<!-- profile is disabled when skip.unit.test property is present -->
 			<build>
 				<plugins>
+				
+					
+					<!-- code coverage tool to be easily integration into sonar -->
 					<plugin>
-						<groupId>org.mortbay.jetty</groupId>
-						<artifactId>maven-jetty-plugin</artifactId>
-						<version>6.1.10</version>
-						<configuration>
-							<scanIntervalSeconds>10</scanIntervalSeconds>
-							<stopKey>foo</stopKey>
-							<stopPort>9999</stopPort>
-						</configuration>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
 						<executions>
 							<execution>
-								<id>start-jetty</id>
+								<id>jacoco-prepare</id>
+								<phase>test</phase>
+								<configuration>
+									<!-- jacoco results are dumped on jvm exit -->
+									<dumpOnExit>true</dumpOnExit>
+									
+									<!-- results are appended to existing data -->
+									<append>true</append>
+									
+									<!-- 
+									name of the property to set the jacoco agent command line to,
+									this will also include the above configuration
+									-->
+									<propertyName>jacoco.argLine</propertyName>
+								</configuration>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							
+							<execution>
+								<!-- create report on verify (after unit and integration test phase) -->
+								<id>jacoco-report</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>run.unit.tests</id>
+								<configuration>
+									<skip>false</skip>
+									<!-- do not execute classes ending with integration test -->
+									<excludes>
+										<exclude>**/*IntegrationTest.class</exclude>
+									</excludes>
+									<!-- pass jacoco agent -->
+									<argLine>${jacoco.argLine}</argLine>
+								</configuration>
+								<goals>
+									<goal>test</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>integration.test</id>
+			<build>
+				<plugins>
+					
+					<!-- code coverage tool to be easily integration into sonar -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
+						<executions>
+							<execution>
+								<id>jacoco-prepare</id>
+								<phase>test</phase>
+								<configuration>
+									<!-- jacoco results are dumped on jvm exit -->
+									<dumpOnExit>true</dumpOnExit>
+									
+									<!-- results are appended to existing data -->
+									<append>true</append>
+									
+									<!-- 
+									name of the property to set the jacoco agent command line to,
+									this will also include the above configuration
+									-->
+									<propertyName>jacoco.argLine</propertyName>
+								</configuration>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							
+							<execution>
+								<!-- create report on verify (after unit and integration test phase) -->
+								<id>jacoco-report</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!--
+					web application container wrapper to abstract instantiation of tomcat, jetty, jboss, etc.
+					this allows us to run tomcat and pass in the jacoco agent to record code coverage during integration test.
+					 -->
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<version>1.1.2</version>
+						<configuration>
+							<container>
+								<!-- container configuration, can also point to a local home directory -->
+								<containerId>tomcat7x</containerId>
+								<zipUrlInstaller>
+									<url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.6/bin/apache-tomcat-7.0.6.zip</url>
+								</zipUrlInstaller>
+							</container>
+							<configuration>
+								<properties>
+									<cargo.servlet.port>${integration.test.servlet.port}</cargo.servlet.port>
+									<cargo.tomcat.ajp.port>${integration.test.ajp.port}</cargo.tomcat.ajp.port>
+									<!--
+									pass jacoco agent to server, because thats the place where the actaul code is executed.
+									-->
+									<cargo.jvmargs>${jacoco.argLine}</cargo.jvmargs>
+								</properties>
+								
+								<deployables>
+									<deployable>
+										<properties>
+											<!-- the context path of the application -->
+											<context>${integration.test.context.path}</context>
+										</properties>
+									</deployable>
+								</deployables>
+							</configuration>
+						</configuration>
+						<executions>
+							<!-- start server before integration tests -->
+							<execution>
+								<id>start-webapp-container</id>
 								<phase>pre-integration-test</phase>
 								<goals>
-									<goal>run</goal>
+									<goal>start</goal>
 								</goals>
-								<configuration>
-									<scanIntervalSeconds>0</scanIntervalSeconds>
-									<daemon>true</daemon>
-								</configuration>
 							</execution>
+							<!-- stop server after integration tests -->
 							<execution>
-								<id>stop-jetty</id>
+								<id>stop-webapp-container</id>
 								<phase>post-integration-test</phase>
 								<goals>
 									<goal>stop</goal>
@@ -153,30 +293,33 @@
 							</execution>
 						</executions>
 					</plugin>
+
+					<!-- run actual integration tests -->
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<skip>false</skip>
-							<includes>
-								<include>**/*IntegrationTest.class</include>
-							</includes>
-						</configuration>
 						<executions>
 							<execution>
 								<id>integration-test</id>
 								<phase>integration-test</phase>
+								<configuration>
+									<skip>false</skip>
+									<!-- only run integration testss -->
+									<includes>
+										<include>**/*IntegrationTest.class</include>
+									</includes>
+									<systemPropertyVariables>
+		                                <integration.test.servlet.port>${integration.test.servlet.port}</integration.test.servlet.port>
+		                                <integration.test.context.path>${integration.test.context.path}</integration.test.context.path>
+		                            </systemPropertyVariables>
+								</configuration>
 								<goals>
 									<goal>integration-test</goal>
 								</goals>
 							</execution>
-							<execution>
-								<id>verify</id>
-								<goals>
-									<goal>verify</goal>
-								</goals>
-							</execution>
 						</executions>
 					</plugin>
+
 				</plugins>
 			</build>
 		</profile>
