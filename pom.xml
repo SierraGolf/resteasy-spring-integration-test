@@ -12,15 +12,15 @@
 		<!-- general maven properties -->
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.plugin.version>2.0.2</maven.compiler.plugin.version>
 
 		<!-- dependency versions -->
+		<maven.compiler.plugin.version>2.0.2</maven.compiler.plugin.version>
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<resteasy.version>2.3.2.Final</resteasy.version>
 
 		<!-- test properties -->
 		<integration.test.context.path>resteasy-spring-integration-test</integration.test.context.path>
-		
+
 		<!-- test dependency versions -->
 		<failsafe.version>2.12.4</failsafe.version>
 		<surefire.version>2.12.4</surefire.version>
@@ -101,10 +101,8 @@
 				</configuration>
 			</plugin>
 
-			<!-- 
-			skip default execution of failsafe and surefire plugin, so that they
-			are only executed through the profiles
-			-->
+			<!-- skip default execution of failsafe and surefire plugin, so that they 
+				are only executed through the profiles -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -122,22 +120,20 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 
-	<!--
-	defines 2 profiles, one is specific for unit tests the other for integration tests.
-	both are mutually exclusive, so that in a jenkins build pipeline each job executes only
-	one profile.
-	-->
+	<!-- defines 2 profiles, one is specific for unit tests the other for integration 
+		tests. both are mutually exclusive, so that in a jenkins build pipeline each 
+		job executes only one profile. -->
 	<profiles>
-	
+
 		<profile>
 			<id>unit.test</id>
 			<build>
 				<plugins>
-				
+
 					<!-- code coverage tool to be easily integration into sonar -->
 					<plugin>
 						<groupId>org.jacoco</groupId>
@@ -150,21 +146,19 @@
 								<configuration>
 									<!-- jacoco results are dumped on jvm exit -->
 									<dumpOnExit>true</dumpOnExit>
-									
+
 									<!-- results are appended to existing data -->
 									<append>true</append>
-									
-									<!-- 
-									name of the property to set the jacoco agent command line to,
-									this will also include the above configuration
-									-->
+
+									<!-- name of the property to set the jacoco agent command line to, 
+										this will also include the above configuration -->
 									<propertyName>jacoco.argLine</propertyName>
 								</configuration>
 								<goals>
 									<goal>prepare-agent</goal>
 								</goals>
 							</execution>
-							
+
 							<execution>
 								<!-- create report on verify (after unit and integration test phase) -->
 								<id>jacoco-report</id>
@@ -201,12 +195,12 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>integration.test</id>
 			<build>
 				<plugins>
-					
+
 					<!-- code coverage tool to be easily integration into sonar -->
 					<plugin>
 						<groupId>org.jacoco</groupId>
@@ -219,21 +213,19 @@
 								<configuration>
 									<!-- jacoco results are dumped on jvm exit -->
 									<dumpOnExit>true</dumpOnExit>
-									
+
 									<!-- results are appended to existing data -->
 									<append>true</append>
-									
-									<!-- 
-									name of the property to set the jacoco agent command line to,
-									this will also include the above configuration
-									-->
+
+									<!-- name of the property to set the jacoco agent command line to, 
+										this will also include the above configuration -->
 									<propertyName>jacoco.argLine</propertyName>
 								</configuration>
 								<goals>
 									<goal>prepare-agent</goal>
 								</goals>
 							</execution>
-							
+
 							<execution>
 								<!-- create report on verify (after unit and integration test phase) -->
 								<id>jacoco-report</id>
@@ -244,32 +236,31 @@
 							</execution>
 						</executions>
 					</plugin>
-					
+
 					<!-- find free ports -->
 					<plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <configuration>
-                            <portNames>
-                                <portName>integration.test.servlet.port</portName>
-                                <portName>integration.test.ajp.port</portName>
-                            </portNames>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>reserve-port</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>reserve-network-port</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<configuration>
+							<portNames>
+								<portName>integration.test.servlet.port</portName>
+								<portName>integration.test.ajp.port</portName>
+							</portNames>
+						</configuration>
+						<executions>
+							<execution>
+								<id>reserve-port</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>reserve-network-port</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 
-					<!--
-					web application container wrapper to abstract instantiation of tomcat, jetty, jboss, etc.
-					this allows us to run tomcat and pass in the jacoco agent to record code coverage during integration test.
-					 -->
+					<!-- web application container wrapper to abstract instantiation of 
+						tomcat, jetty, jboss, etc. this allows us to run tomcat and pass in the jacoco 
+						agent to record code coverage during integration test. -->
 					<plugin>
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven2-plugin</artifactId>
@@ -286,12 +277,11 @@
 								<properties>
 									<cargo.servlet.port>${integration.test.servlet.port}</cargo.servlet.port>
 									<cargo.tomcat.ajp.port>${integration.test.ajp.port}</cargo.tomcat.ajp.port>
-									<!--
-									pass jacoco agent to server, because thats the place where the actaul code is executed.
-									-->
+									<!-- pass jacoco agent to server, because thats the place where 
+										the actaul code is executed. -->
 									<cargo.jvmargs>${jacoco.argLine}</cargo.jvmargs>
 								</properties>
-								
+
 								<deployables>
 									<deployable>
 										<properties>
@@ -337,9 +327,9 @@
 										<include>**/*IntegrationTest.class</include>
 									</includes>
 									<systemPropertyVariables>
-		                                <integration.test.servlet.port>${integration.test.servlet.port}</integration.test.servlet.port>
-		                                <integration.test.context.path>${integration.test.context.path}</integration.test.context.path>
-		                            </systemPropertyVariables>
+										<integration.test.servlet.port>${integration.test.servlet.port}</integration.test.servlet.port>
+										<integration.test.context.path>${integration.test.context.path}</integration.test.context.path>
+									</systemPropertyVariables>
 								</configuration>
 								<goals>
 									<goal>integration-test</goal>
