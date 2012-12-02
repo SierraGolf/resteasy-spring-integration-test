@@ -137,11 +137,9 @@
 	
 		<profile>
 			<id>unit.test</id>
-			<!-- profile is disabled when skip.unit.test property is present -->
 			<build>
 				<plugins>
 				
-					
 					<!-- code coverage tool to be easily integration into sonar -->
 					<plugin>
 						<groupId>org.jacoco</groupId>
