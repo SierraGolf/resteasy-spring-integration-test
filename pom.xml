@@ -20,8 +20,6 @@
 
 		<!-- test properties -->
 		<integration.test.context.path>resteasy-spring-integration-test</integration.test.context.path>
-		<integration.test.servlet.port>8080</integration.test.servlet.port>
-		<integration.test.ajp.port>8009</integration.test.ajp.port>
 		
 		<!-- test dependency versions -->
 		<failsafe.version>2.12.4</failsafe.version>
@@ -178,6 +176,7 @@
 						</executions>
 					</plugin>
 
+					<!-- run actual unit tests -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
@@ -245,6 +244,27 @@
 							</execution>
 						</executions>
 					</plugin>
+					
+					<!-- find free ports -->
+					<plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <configuration>
+                            <portNames>
+                                <portName>integration.test.servlet.port</portName>
+                                <portName>integration.test.ajp.port</portName>
+                            </portNames>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>reserve-port</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>reserve-network-port</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
 					<!--
 					web application container wrapper to abstract instantiation of tomcat, jetty, jboss, etc.
