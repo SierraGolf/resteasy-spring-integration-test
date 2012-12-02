@@ -3,7 +3,7 @@ package com.codereligion.service;
 import org.springframework.stereotype.Service;
 
 /**
- * HelloWorldService
+ * Implementation of {@link HelloWorldService}.
  *
  * @author sgroebler
  * @since 02.12.2012

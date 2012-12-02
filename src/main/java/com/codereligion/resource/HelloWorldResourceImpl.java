@@ -5,6 +5,12 @@ import com.codereligion.service.HelloWorldService;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of {@link HelloWorldResource}.
+ *
+ * @author sgroebler
+ * @since 02.12.2012
+ */
 @Service
 public class HelloWorldResourceImpl implements HelloWorldResource {
 
