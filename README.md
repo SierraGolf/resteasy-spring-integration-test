@@ -10,6 +10,7 @@ The main purpose of this application is to demonstrate a solution for a full n-t
 * Spring for DI
 
 ### testing technologies
+* JUnit
 * failsafe for unit tests
 * surefire for integration tests
 * jacoco for code coverage
